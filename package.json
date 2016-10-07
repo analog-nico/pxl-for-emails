@@ -42,7 +42,8 @@
   },
   "dependencies": {
     "bluebird": "^3.4.6",
-    "lodash": "^4.16.4"
+    "lodash": "^4.16.4",
+    "string-replace-async": "^1.2.0"
   },
   "devDependencies": {
     "chai": "~3.5.0",
@@ -54,6 +55,7 @@
     "gulp-mocha": "~3.0.1",
     "publish-please": "~2.2.0",
     "rimraf": "~2.5.4",
-    "run-sequence": "~1.2.2"
+    "run-sequence": "~1.2.2",
+    "sinon": "^1.17.6"
   }
 }
