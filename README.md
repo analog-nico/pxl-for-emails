@@ -41,7 +41,7 @@ If you want to debug a test you should use `gulp test-without-coverage` to run a
 
 ## Change History
 
-- v0.0.1 (upcoming)
+- v0.0.1 (2016-10-07)
     - Initial version
 
 ## License (ISC)
