@@ -1,7 +1,7 @@
 {
   "name": "pxl-for-emails",
   "version": "0.0.1",
-  "description": "Open and click tracking for html emails",
+  "description": "Open and click tracking for html emails - hosted by any Express-based node.js app",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/gulp ci",
