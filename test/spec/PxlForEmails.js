@@ -1,6 +1,8 @@
 'use strict'
 
 let _ = require('lodash')
+let fs = require('fs')
+let path = require('path')
 let PxlForEmails = require('../../')
 let sinon = require('sinon')
 
@@ -34,7 +36,7 @@ describe('PxlForEmails', () => {
                     return new Promise((resolve) => { resolve({ pxl: 'testpxl' }) })
                 },
                 shorten(link) {
-                    return new Promise((resolve) => { resolve({ linkId: String(link.length) }) })
+                    return new Promise((resolve) => { resolve({ linkId: `id${ shortenSpy.callCount }` }) })
                 },
                 queryParam: 'pxl'
             }
@@ -92,7 +94,42 @@ describe('PxlForEmails', () => {
             return pxlForEmails.addOpenTracking(htmlEmail, { additional: true })
                 .then((updatedHtmlEmail) => {
 
-                    expect(updatedHtmlEmail).to.eql('abc<img src="http://mysite.com/ly/17?pxl=testpxl"/>testdef<img\n src="http://mysite.com/ly/28?pxl=testpxl">test2ghi')
+                    expect(updatedHtmlEmail).to.eql('abc<img src="http://mysite.com/ly/id1?pxl=testpxl"/>testdef<img\n src="http://mysite.com/ly/id2?pxl=testpxl">test2ghi')
+
+                    expect(createPxlSpy.calledOnce).to.eql(true)
+                    expect(createPxlSpy.firstCall.args[0]).to.eql({
+                        type: 'open',
+                        additional: true
+                    })
+
+                    expect(shortenSpy.calledTwice).to.eql(true)
+
+                })
+
+        })
+
+        it('to all images with shortening the links and repeating links', () => {
+
+            let htmlEmail = 'abc<img src="http://google.com"/>testdef<img\n src="http://apple.com">def<img\n src="http://apple.com">def<img\n src="http://apple.com?iphone=next">test2ghi'
+
+            let pxlForEmails = new PxlForEmails({
+                pxl,
+                openTracking: {
+                    shouldApply(link) {
+                        return {
+                            link: link.split('?')[0]
+                        }
+                    }
+                },
+                getFullShortenedLink(linkId) {
+                    return `http://mysite.com/ly/${ linkId }`
+                }
+            })
+
+            return pxlForEmails.addOpenTracking(htmlEmail, { additional: true })
+                .then((updatedHtmlEmail) => {
+
+                    expect(updatedHtmlEmail).to.eql('abc<img src="http://mysite.com/ly/id1?pxl=testpxl"/>testdef<img\n src="http://mysite.com/ly/id2?pxl=testpxl">def<img\n src="http://mysite.com/ly/id2?pxl=testpxl">def<img\n src="http://mysite.com/ly/id2?pxl=testpxl">test2ghi')
 
                     expect(createPxlSpy.calledOnce).to.eql(true)
                     expect(createPxlSpy.firstCall.args[0]).to.eql({
@@ -327,9 +364,9 @@ describe('PxlForEmails', () => {
             return pxlForEmails.addClickTracking(htmlEmail, { additional: true })
                 .then((updatedHtmlEmail) => {
 
-                    expect(updatedHtmlEmail).to.eql('abc<a wronghref="wrong" href="http://mysite.com/ly/id1?pxl=testpxl1">test</a>def<a href="http://mysite.com/ly/id2?pxl=testpxl2">xyz</a>def<a href="http://mysite.com/ly/id2?pxl=testpxl2">xyz</a>123<a \nhref="http://mysite.com/ly/id3?pxl=testpxl3">test2</a>ghi')
+                    expect(updatedHtmlEmail).to.eql('abc<a wronghref="wrong" href="http://mysite.com/ly/id1?pxl=testpxl1">test</a>def<a href="http://mysite.com/ly/id2?pxl=testpxl2">xyz</a>def<a href="http://mysite.com/ly/id2?pxl=testpxl3">xyz</a>123<a \nhref="http://mysite.com/ly/id2?pxl=testpxl4">test2</a>ghi')
 
-                    expect(createPxlSpy.calledThrice).to.eql(true)
+                    expect(createPxlSpy.callCount).to.eql(4)
                     expect(createPxlSpy.firstCall.args[0]).to.eql({
                         type: 'click',
                         link: 'http://google.com',
@@ -345,8 +382,13 @@ describe('PxlForEmails', () => {
                         link: 'http://apple.com',
                         additional: true
                     })
+                    expect(createPxlSpy.args[3][0]).to.eql({
+                        type: 'click',
+                        link: 'http://apple.com',
+                        additional: true
+                    })
 
-                    expect(shortenSpy.calledThrice).to.eql(true)
+                    expect(shortenSpy.calledTwice).to.eql(true)
 
                 })
 
@@ -507,6 +549,70 @@ describe('PxlForEmails', () => {
                 })
                 .catch((err) => {
                     expect(err.message).to.eql('test')
+                })
+
+        })
+
+    })
+
+    describe('should add open and click tracking', () => {
+
+        let pxlForEmails = null
+        let createPxlSpy = null
+        let shortenSpy = null
+
+        before(() => {
+
+            let pxl = {
+                createPxl() {
+                    return new Promise((resolve) => { resolve({ pxl: `pxl${ createPxlSpy.callCount }` }) })
+                },
+                shorten(link) {
+                    return new Promise((resolve) => { resolve({ linkId: `id${ shortenSpy.callCount }` }) })
+                },
+                queryParam: 'sqr'
+            }
+            createPxlSpy = sinon.spy(pxl, 'createPxl')
+            shortenSpy = sinon.spy(pxl, 'shorten')
+
+            pxlForEmails = new PxlForEmails({
+                pxl,
+                getFullShortenedLink(linkId) {
+                    return `http://mysite.com/ly/${ linkId }`
+                }
+            })
+
+        })
+
+        beforeEach(() => {
+            createPxlSpy.reset()
+            shortenSpy.reset()
+        })
+
+        it('to simple template', () => {
+
+            let htmlEmail = '<img src="img1"><a href="anchor1">'
+
+            return pxlForEmails.addTracking(htmlEmail, { some: 'value' })
+                .then((updatedHtmlEmail) => {
+
+                    expect(updatedHtmlEmail).to.eql('<img src="http://mysite.com/ly/id1?sqr=pxl1"><a href="http://mysite.com/ly/id2?sqr=pxl2">')
+
+                })
+
+        })
+
+        it('to real life template', () => {
+
+            let htmlEmail = fs.readFileSync(path.join(__dirname, '../fixtures/template-before.html'), 'utf-8')
+
+            return pxlForEmails.addTracking(htmlEmail, { some: 'value' })
+                .then((updatedHtmlEmail) => {
+
+                    // fs.writeFileSync(path.join(__dirname, './result.html'), updatedHtmlEmail)
+
+                    expect(updatedHtmlEmail).to.eql(fs.readFileSync(path.join(__dirname, '../fixtures/template-after.html'), 'utf-8'))
+
                 })
 
         })
