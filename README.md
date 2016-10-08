@@ -21,6 +21,8 @@ This is a module for node.js and is installed via npm:
 npm install pxl-for-emails --save
 ```
 
+`pxl-for-emails` uses the [`pxl` library](https://github.com/analog-nico/pxl) to manage the tracking and has to be installed separately.
+
 ## Usage
 
 Description forthcoming.
