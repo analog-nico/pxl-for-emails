@@ -119,24 +119,24 @@ The metadata is important for the analysis of the tracked data. Besides the reci
 
 `pxl-for-emails` has the following default behavior if you initialize it as described in the Usage section above:
 
-- All image urls in the email are used for open tracking
+- The url of the first image in the email is used for open tracking
 - If the email does not contain any images the email is marked as being opened once the user clicks on any link
 - All links are extended for click tracking
-- All images urls and links are categorized as external resources and thus are shortened
+- The image url and all links are categorized as external resources and thus are shortened
 
 Use the additional options to change the default behavior.
 
-### Only use one image for open tracking
+### Select a specific or even multiple images for open tracking
 
 Description forthcoming.
 
-Btw, make sure you disable caching when you serve the image that is used for open tracking. You may use [`nocache`](https://www.npmjs.com/package/nocache) to achieve this.
+Btw, either shorten the image urls (default) or otherwise make sure you disable caching when serving the images that are used for open tracking. You may use [`nocache`](https://www.npmjs.com/package/nocache) to achieve this.
 
-### Improve open tracking if the email has no images
+### Improve the open tracking if the email has no images
 
-Just add a 1x1 transparent pixel image to your email and let `pxl-for-emails` add open tracking to this image.
+Just add a [1x1 transparent pixel image](http://www.1x1px.me) to your email (`<img src="...url..." alt="">` somewhere in its body) and let `pxl-for-emails` add open tracking to this image.
 
-Btw, make sure you disable caching when you serve this image. You may use [`nocache`](https://www.npmjs.com/package/nocache) to achieve this.
+Btw, either shorten the image url (default) or otherwise make sure you disable caching when serving the image that is used for open tracking. You may use [`nocache`](https://www.npmjs.com/package/nocache) to achieve this.
 
 ### Add click tracking not to all but specific links
 
@@ -169,6 +169,8 @@ Requests to images and webpages which you host with your own Express app will pa
   })
 ```
 
+Btw, if you don't shorten the image urls make sure you disable caching when serving the images that are used for open tracking. You may use [`nocache`](https://www.npmjs.com/package/nocache) to achieve this.
+
 ### Add categories to all links for easier data analysis
 
 Your email may contain multiple sign up buttons or multiple links to your blog articles. All those links are tracked separately by default. However, you may want to analyze your data and answer "Did the recipient click on any sign up button?" or "Did the recipient visit our blog?". While you still want to be able to answer "Which sign up botton?" or "Which blog article?" &ndash; so separate tracking is important &ndash; the solution is to add categories like "sign up button" or "blog article" as additional metadata to the tracking records in the database. Then you can easily answer your questions by grouping the tracking records by their category.
@@ -192,6 +194,7 @@ If you want to debug a test you should use `gulp test-without-coverage` to run a
 ## Change History
 
 - v0.0.2 (upcoming)
+    - By default, only the first image is used for open tracking
     - `shorten` attribute returned by `shouldApply` may be truthy or falsy instead of `true` or `false`
 - v0.0.1 (2016-10-07)
     - Initial version

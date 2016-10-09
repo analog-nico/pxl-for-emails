@@ -56,6 +56,7 @@ describe('PxlForEmails', () => {
             let pxlForEmails = new PxlForEmails({
                 pxl,
                 openTracking: {
+                    applyToFirstCandidateOnly: false,
                     shouldApply(link) {
                         return {
                             shorten: false
@@ -86,6 +87,9 @@ describe('PxlForEmails', () => {
 
             let pxlForEmails = new PxlForEmails({
                 pxl,
+                openTracking: {
+                    applyToFirstCandidateOnly: false
+                },
                 getFullShortenedLink(linkId) {
                     return `http://mysite.com/ly/${ linkId }`
                 }
@@ -115,6 +119,7 @@ describe('PxlForEmails', () => {
             let pxlForEmails = new PxlForEmails({
                 pxl,
                 openTracking: {
+                    applyToFirstCandidateOnly: false,
                     shouldApply(link) {
                         return {
                             link: link.split('?')[0]
@@ -150,6 +155,7 @@ describe('PxlForEmails', () => {
             let pxlForEmails = new PxlForEmails({
                 pxl,
                 openTracking: {
+                    applyToFirstCandidateOnly: false,
                     shouldApply(link) {
                         return {
                             metadata: {
@@ -187,6 +193,7 @@ describe('PxlForEmails', () => {
             let pxlForEmails = new PxlForEmails({
                 pxl,
                 openTracking: {
+                    applyToFirstCandidateOnly: false,
                     shouldApply(link) {
                         return link.match(/\?pxl$/)
                             ? { link: link.split('?')[0], metadata: {}, shorten: false }
@@ -200,6 +207,31 @@ describe('PxlForEmails', () => {
                 .then((updatedHtmlEmail) => {
 
                     expect(updatedHtmlEmail).to.eql('abc<img src="http://google.com"/>testdef<img\n src="http://apple.com?pxl=testpxl">test2ghi')
+
+                })
+
+        })
+
+        it('to first specific image', () => {
+
+            let htmlEmail = 'abc<img src="http://google.com"/>testdef<img\n src="http://apple.com?pxl">test2ghi<img\n src="http://apple.com?pxl">test2ghi'
+
+            let pxlForEmails = new PxlForEmails({
+                pxl,
+                openTracking: {
+                    shouldApply(link) {
+                        return link.match(/\?pxl$/)
+                            ? { link: link.split('?')[0], metadata: {}, shorten: false }
+                            : false
+                    }
+                },
+                getFullShortenedLink: _.noop
+            })
+
+            return pxlForEmails.addOpenTracking(htmlEmail)
+                .then((updatedHtmlEmail) => {
+
+                    expect(updatedHtmlEmail).to.eql('abc<img src="http://google.com"/>testdef<img\n src="http://apple.com?pxl=testpxl">test2ghi<img\n src="http://apple.com?pxl">test2ghi')
 
                 })
 
