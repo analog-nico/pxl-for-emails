@@ -51,7 +51,7 @@ describe('PxlForEmails', () => {
 
         it('to all images', () => {
 
-            let htmlEmail = 'abc<img src="http://google.com"/>testdef<img\n src="http://apple.com?iphone=next">test2ghi'
+            let htmlEmail = 'abc<img src="http://google.com"/>testdef<img\n src="http://apple.com?iphone=next">test2ghiabc<img src="http://google.com#hash1"/>testdef<img\n src="http://apple.com?iphone=next#hash2">test2ghi'
 
             let pxlForEmails = new PxlForEmails({
                 pxl,
@@ -69,7 +69,7 @@ describe('PxlForEmails', () => {
             return pxlForEmails.addOpenTracking(htmlEmail, { additional: true })
                 .then((updatedHtmlEmail) => {
 
-                    expect(updatedHtmlEmail).to.eql('abc<img src="http://google.com?pxl=testpxl"/>testdef<img\n src="http://apple.com?iphone=next&pxl=testpxl">test2ghi')
+                    expect(updatedHtmlEmail).to.eql('abc<img src="http://google.com?pxl=testpxl"/>testdef<img\n src="http://apple.com?iphone=next&pxl=testpxl">test2ghiabc<img src="http://google.com?pxl=testpxl#hash1"/>testdef<img\n src="http://apple.com?iphone=next&pxl=testpxl#hash2">test2ghi')
 
                     expect(createPxlSpy.calledOnce).to.eql(true)
                     expect(createPxlSpy.firstCall.args[0]).to.eql({
