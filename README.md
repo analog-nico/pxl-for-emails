@@ -193,7 +193,7 @@ If you want to debug a test you should use `gulp test-without-coverage` to run a
 
 ## Change History
 
-- v0.0.2 (upcoming)
+- v0.0.2 (2016-10-08)
     - By default, only the first image is used for open tracking
     - `shorten` attribute returned by `shouldApply` may be truthy or falsy instead of `true` or `false`
 - v0.0.1 (2016-10-07)
