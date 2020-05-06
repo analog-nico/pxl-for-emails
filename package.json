@@ -7,7 +7,8 @@
     "test": "./node_modules/.bin/gulp ci",
     "test-publish": "./node_modules/.bin/gulp ci-no-cov",
     "publish-please": "publish-please",
-    "prepublish": "publish-please guard"
+    "prepublish": "npm run snyk-protect && publish-please guard",
+    "snyk-protect": "snyk protect"
   },
   "repository": {
     "type": "git",
@@ -43,7 +44,8 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "lodash": "^4.16.4",
-    "string-replace-async": "^1.2.0"
+    "string-replace-async": "^1.2.0",
+    "snyk": "^1.319.0"
   },
   "devDependencies": {
     "chai": "~3.5.0",
@@ -57,5 +59,6 @@
     "rimraf": "~2.5.4",
     "run-sequence": "~1.2.2",
     "sinon": "^1.17.6"
-  }
+  },
+  "snyk": true
 }
